@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Expo-react-native",
-    "slug": "Expo-react-native",
+    "name": "Sora",
+    "slug": "Sora",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "Sora",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
