@@ -5,9 +5,11 @@ import { StatusBar } from "expo-status-bar";
 export default function Index() {
   return (
     <View style={styles.container}>
-      <Text>Sora.</Text>
+      <Text style={{
+        fontSize:20
+      }}>Sora.</Text>
       <StatusBar style="auto" />
-      <Link href="./Components/Game" style={{color:'blue'}}>Go to profile</Link>
+      <Link href="./Components/Game" style={{color:'blue', fontSize:30}}>Play Game</Link>
     </View>
   );
 }
