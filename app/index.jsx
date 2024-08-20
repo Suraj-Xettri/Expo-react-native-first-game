@@ -6,9 +6,8 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text>Sora.</Text>
-
       <StatusBar style="auto" />
-      <Link href="/profile" style={{color:'blue'}}>Go to profile</Link>
+      <Link href="./Components/Game" style={{color:'blue'}}>Go to profile</Link>
     </View>
   );
 }
