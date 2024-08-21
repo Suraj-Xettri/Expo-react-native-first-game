@@ -1,9 +1,17 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-
+import RandomNumber from "./RandomNumber";
 const Game = () => {
-  const target = 10 + Math.floor(40 * Math.random());
-  const arr = [1, 2, 3, 4, 5, 6,7,8,9];
+  const totalChoice = 6;
+
+  const randomNumbers = Array.from({ length: totalChoice}).map(() => 
+    2 + Math.floor(20 * Math.random())
+  );
+
+  const target = randomNumbers.slice(0, totalChoice -2).
+  reduce((acc, curr) => acc + curr,0);
+
+
 
   return (
     <View style={styles.container}>
@@ -11,10 +19,8 @@ const Game = () => {
         <Text style={styles.header}>Target: {target}</Text>
       </View>
       <View style={styles.gridContainer}>
-        {arr.map((num, i) => (
-          <View key={i} style={styles.gridItem}>
-            <Text style={styles.gridText}>{num}</Text>
-          </View>
+        {randomNumbers.map((num, i) => (
+          <RandomNumber key={i} number={num} target={target}/>
         ))}
       </View>
     </View>
@@ -37,29 +43,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   gridContainer: {
-    marginTop:150,
+    marginTop: 150,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-around",
     alignItems: "center",
     gap: 15,
   },
-  gridItem: {
-    width: 90,
-    height: 90,
-    backgroundColor: "#ffcad4",
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  gridText: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#fff",
-  },
+  
 });
