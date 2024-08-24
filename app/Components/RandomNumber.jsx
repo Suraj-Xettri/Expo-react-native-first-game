@@ -1,21 +1,16 @@
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import React, { useState } from "react";
 
-const RandomNumber = ({ number, target }) => {
-  const [selectedNumber, setSelectedNumber] = useState([]);
+const RandomNumber = ({ number,id,  onpress, isDisabled}) => {
 
-  const handlePress = () => {
-    setSelectedNumber((prev) => {
-      // Return a new array with the previous numbers plus the new one
-      return [...prev, number];
-    });
+  const handlePress = (id) => {
+    if(isDisabled) return;
+    onpress(id)
   };
 
-  console.log(selectedNumber);
   return (
     <View style={styles.gridItem}>
-      <TouchableOpacity onPress={handlePress}>
-        <Text style={styles.gridText}>{number}</Text>
+      <TouchableOpacity style={styles.butt} onPress={() => handlePress(id)}>
+        <Text style={[styles.gridText, isDisabled && styles.selected]}>{number}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -37,9 +32,16 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
+  butt:{
+    width:'full',
+    height:'full'
+  },
   gridText: {
     fontSize: 24,
     fontWeight: "600",
     color: "#fff",
   },
+  selected:{
+    opacity: 0.3
+  }
 });
