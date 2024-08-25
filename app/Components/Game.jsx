@@ -1,4 +1,9 @@
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  View,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import RandomNumber from "./RandomNumber";
 
@@ -9,6 +14,12 @@ const Game = () => {
   const [randomNumbers, setRandomNumbers] = useState([]);
   const [target, setTarget] = useState(0);
 
+  const [Won, setWon] = useState(0);
+  const [Lost, setLost] = useState(0);
+
+  const playAgain = () => {
+    
+  }
   useEffect(() => {
     // Generate random numbers once when the component mounts
     const generatedNumbers = Array.from({ length: totalChoice }).map(
@@ -26,6 +37,11 @@ const Game = () => {
 
   const [selectedNumbers, setSelectedNumbers] = useState([]);
 
+  const ResetResult = () => {
+    setLost(0);
+    setWon(0);
+  };
+
   const [time, setTime] = useState(10);
 
   useEffect(() => {
@@ -38,7 +54,7 @@ const Game = () => {
         }
         return prevTime - 1;
       });
-    }, 1000);
+    }, 10000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -54,8 +70,8 @@ const Game = () => {
       return acc + randomNumbers[curr];
     }, 0);
 
-    if (time === 0){
-      return "LOST"
+    if (time === 0) {
+      return "LOST";
     }
     if (sumSelected < target) {
       return "PLAYING";
@@ -72,26 +88,60 @@ const Game = () => {
 
   const GameStatus = gameStatus();
 
+  useEffect(() => {
+    const calculateResult = () => {
+      if (GameStatus === "WON") {
+        setWon((prev) => prev + 1);
+      }
+
+      if (GameStatus === "LOST") {
+        setLost((prev) => prev + 1);
+      }
+    };
+
+    calculateResult();
+  }, [selectedNumbers, time, target]); // Track the states that affect GameStatus
+
   return (
     <View style={styles.container}>
-      <View style={[styles.statusContainer, styles[`STATUS_${GameStatus}`]]}>
-        <Text style={styles.header}>Target: {target}</Text>
-        <Text>Remaining Time: {time} </Text>
-      </View>
-      <View style={styles.gridContainer}>
-        {randomNumbers.map((num, i) => (
-          <RandomNumber
-            key={i}
-            id={i}
-            number={num}
-            isDisabled={isNumberSelected(i) || GameStatus !== "PLAYING"}
-            target={target}
-            onpress={handleNumberPress}
-          />
-        ))}
+      <View style={styles.topContainer}>
+        <View style={styles.status}>
+          <Text style={styles.statusText}>Won: {Won}</Text>
+          <Text style={styles.statusText}>Lost: {Lost}</Text>
+
+          <TouchableOpacity style={styles.reset} onPress={ResetResult}>
+            <Text style={styles.resetText}>Reset</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.statusContainer, styles[`STATUS_${GameStatus}`]]}>
+          <Text style={styles.header}>Target: {target}</Text>
+          <Text>Remaining Time: {time} </Text>
+        </View>
       </View>
 
-      <Text style={styles.results}>{GameStatus}</Text>
+      <View style={styles.lastContainer}>
+        <View style={styles.gridContainer}>
+          {randomNumbers.map((num, i) => (
+            <RandomNumber
+              key={i}
+              id={i}
+              number={num}
+              isDisabled={isNumberSelected(i) || GameStatus !== "PLAYING"}
+              target={target}
+              onpress={handleNumberPress}
+            />
+          ))}
+        </View>
+
+        <View style={styles.last}>
+          <Text style={styles.results}>{GameStatus}</Text>
+
+          <TouchableOpacity style={styles.resetLast} onPress={ResetResult}>
+            <Text>{ "Play Again"}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -105,6 +155,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
+  topContainer:{
+    marginTop:40,
+  },
+  lastContainer:{
+    marginBottom:20,
+    gap:10
+  },
   statusContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -117,7 +174,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   gridContainer: {
-    marginTop: 100,
+    marginTop: 200,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-around",
@@ -125,7 +182,6 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   results: {
-    marginTop: 150,
     fontSize: 40,
     fontWeight: "600",
     textDecorationLine: "underline",
@@ -133,11 +189,50 @@ const styles = StyleSheet.create({
   },
   STATUS_PLAYING: {
     backgroundColor: "#bbb",
+    borderRadius: 15,
   },
   STATUS_WON: {
     backgroundColor: "green",
+    borderRadius: 15,
   },
   STATUS_LOST: {
     backgroundColor: "red",
+    borderRadius: 15,
+  },
+  status: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+  },
+  statusText: {
+    fontSize: 20,
+  },
+  reset: {
+    backgroundColor: "pink",
+    opacity: 0.8,
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+  resetText: {
+    fontSize: 15,
+    fontWeight: "600",
+    fontStyle: "italic",
+    textAlign: "center",
+  },
+  last: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  resetLast: {
+    backgroundColor: "pink",
+    opacity: 0.8,
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 10,
   },
 });
