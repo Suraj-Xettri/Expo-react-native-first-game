@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import RandomNumber from "./RandomNumber";
-
+import shuffle from 'lodash.shuffle'
 const Game = () => {
   const totalChoice = 6;
   const [randomNumbers, setRandomNumbers] = useState([]);
@@ -27,6 +27,7 @@ const Game = () => {
     setSelectedNumbers([]);
   };
 
+  
   useEffect(() => {
     // Generate random numbers once when the component mounts
     const generatedNumbers = Array.from({ length: totalChoice }).map(
@@ -38,7 +39,8 @@ const Game = () => {
       .slice(0, totalChoice - 2)
       .reduce((acc, curr) => acc + curr, 0);
 
-    setRandomNumbers(generatedNumbers);
+    setRandomNumbers(shuffle(generatedNumbers));
+    
     setTarget(calculatedTarget);
   }, []); // Empty dependency array ensures this runs only once
 
@@ -51,22 +53,18 @@ const Game = () => {
     // Timer setup using useEffect
     const intervalId = setInterval(() => {
       setTime((prevTime) => {
-        if (prevTime === 0) {
+        if (prevTime === 0 || GameStatus === "WON" || GameStatus === "LOST") {
           clearInterval(intervalId);
           return prevTime;
         }
         return prevTime - 1;
       });
-    }, 10000);
+    }, 1000);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [GameStatus, time]);
 
   const isNumberSelected = (index) => selectedNumbers.includes(index);
-
-  const handleNumberPress = (index) => {
-    setSelectedNumbers((prevSelected) => [...prevSelected, index]);
-  };
 
   const gameStatus = () => {
     const sumSelected = selectedNumbers.reduce((acc, curr) => {
@@ -90,6 +88,10 @@ const Game = () => {
   };
 
   const GameStatus = gameStatus();
+
+  const handleNumberPress = (index) => {
+    setSelectedNumbers((prevSelected) => [...prevSelected, index]);
+  };
 
   useEffect(() => {
     const calculateResult = () => {
@@ -139,12 +141,11 @@ const Game = () => {
 
         <View style={styles.last}>
           <Text style={styles.results}>{GameStatus}</Text>
-          {GameStatus === "WON" ||
-            (GameStatus === "LOST" && (
-              <TouchableOpacity style={styles.resetLast} onPress={playAgain}>
-                <Text>Play Again</Text>
-              </TouchableOpacity>
-            ))}
+          {(GameStatus === "WON" || GameStatus === "LOST") && (
+            <TouchableOpacity style={styles.resetLast} onPress={playAgain}>
+              <Text>Play Again</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
