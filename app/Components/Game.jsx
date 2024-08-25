@@ -1,25 +1,32 @@
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  View,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import RandomNumber from "./RandomNumber";
 
 const Game = () => {
   const totalChoice = 6;
-
-  // Generate the random numbers and target only once when the component mounts
   const [randomNumbers, setRandomNumbers] = useState([]);
   const [target, setTarget] = useState(0);
-
   const [Won, setWon] = useState(0);
   const [Lost, setLost] = useState(0);
+  const [time, setTime] = useState(10);
+  const [selectedNumbers, setSelectedNumbers] = useState([]);
 
   const playAgain = () => {
-    
-  }
+    // Generate new numbers and target just like when the component mounts
+    const generatedNumbers = Array.from({ length: totalChoice }).map(
+      () => 2 + Math.floor(20 * Math.random())
+    );
+
+    const calculatedTarget = generatedNumbers
+      .slice(0, totalChoice - 2)
+      .reduce((acc, curr) => acc + curr, 0);
+
+    setRandomNumbers(generatedNumbers);
+    setTarget(calculatedTarget);
+    setTime(10); // Reset the timer to 10 seconds
+    setSelectedNumbers([]);
+  };
+
   useEffect(() => {
     // Generate random numbers once when the component mounts
     const generatedNumbers = Array.from({ length: totalChoice }).map(
@@ -35,14 +42,10 @@ const Game = () => {
     setTarget(calculatedTarget);
   }, []); // Empty dependency array ensures this runs only once
 
-  const [selectedNumbers, setSelectedNumbers] = useState([]);
-
   const ResetResult = () => {
     setLost(0);
     setWon(0);
   };
-
-  const [time, setTime] = useState(10);
 
   useEffect(() => {
     // Timer setup using useEffect
@@ -136,10 +139,12 @@ const Game = () => {
 
         <View style={styles.last}>
           <Text style={styles.results}>{GameStatus}</Text>
-
-          <TouchableOpacity style={styles.resetLast} onPress={ResetResult}>
-            <Text>{ "Play Again"}</Text>
-          </TouchableOpacity>
+          {GameStatus === "WON" ||
+            (GameStatus === "LOST" && (
+              <TouchableOpacity style={styles.resetLast} onPress={playAgain}>
+                <Text>Play Again</Text>
+              </TouchableOpacity>
+            ))}
         </View>
       </View>
     </View>
@@ -147,7 +152,6 @@ const Game = () => {
 };
 
 export default Game;
-
 const styles = StyleSheet.create({
   container: {
     height: "100%",
@@ -155,12 +159,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-  topContainer:{
-    marginTop:40,
+  topContainer: {
+    marginTop: 20,
   },
-  lastContainer:{
-    marginBottom:20,
-    gap:10
+  lastContainer: {
+    marginBottom: 20,
+    gap: 10,
   },
   statusContainer: {
     justifyContent: "center",
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   gridContainer: {
-    marginTop: 200,
+    marginTop: 150,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-around",
@@ -229,8 +233,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   resetLast: {
-    backgroundColor: "pink",
-    opacity: 0.8,
+    backgroundColor: "skyblue",
+    marginTop: 30,
+    opacity: 0.5,
     paddingHorizontal: 30,
     paddingVertical: 10,
     borderRadius: 10,
